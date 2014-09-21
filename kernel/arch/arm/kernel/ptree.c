@@ -3,10 +3,7 @@
 #include <linux/prinfo.h>
 #include "sched.h"
 
-int ptree(struct prinfo *buf, int *nr)
-{
-	
-}
+
 
 /**
  * sys_ptree - get the process tree
@@ -15,5 +12,5 @@ int ptree(struct prinfo *buf, int *nr)
  */
 SYSCALL_DEFINE2(ptree, struct pinfo __user *, buf, int __user *, nr)
 {
-
+	return 0;
 }
