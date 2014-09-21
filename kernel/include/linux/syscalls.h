@@ -859,6 +859,6 @@ asmlinkage long sys_process_vm_writev(pid_t pid,
 				      unsigned long riovcnt,
 				      unsigned long flags);
 
-asmlinkage int sys_ptree(struct prinfo *buf, int *nr); /* cqm */
+asmlinkage long sys_ptree(struct prinfo *buf, int *nr); /* cqm */
 
 #endif
