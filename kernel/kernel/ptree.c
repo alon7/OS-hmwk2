@@ -86,7 +86,7 @@ void dfs_prinfo_copy(struct task_struct *head, struct prinfo *kernel_buf, int *c
 			|| p->sibling.next == &p->real_parent->children)
 			kernel_buf[*copy_count].next_sibling_pid = 0;
 		else
-			kernel_buf[*copy_count].next_sibling_pid = list_entry(p->children.next, struct task_struct, sibling)->pid;	
+			kernel_buf[*copy_count].next_sibling_pid = list_entry(p->sibling.next, struct task_struct, sibling)->pid;	
 		kernel_buf[*copy_count].state = p->state;
 		kernel_buf[*copy_count].uid = p->cred->uid;
 		for (i = 0; i < 64; ++i) {
