@@ -1,0 +1,41 @@
+#include <stdlib.h>
+#include <stdio.h>
+<<<<<<< HEAD
+#include "kernel/include/linux/prinfo.h"
+
+int main(int argc, char **argv) {
+	struct prinfo *buf;
+	int *nr;
+	nr = malloc(sizeof(int) * 1);
+	*nr = 1;
+	buf = (struct prinfo*)malloc(sizeof(struct prinfo) * (*nr));
+	syscall(223,buf,nr);
+	int i = 0;
+	for(i = 0; i < *nr; i++){
+		printf("%s,%d,%ld,%d,%d,%d,%ld\n",
+			(buf + i)->comm,
+			(buf + i)->pid,
+			(buf + i)->state,
+			(buf + i)->parent_pid,
+			(buf + i)->first_child_pid,
+			(buf + i)->next_sibling_pid,
+			(buf + i)->uid);
+=======
+#include <unistd.h>
+#include "kernel/include/linux/prinfo.h"
+struct prinfo;
+
+int main(int argc, char **argv) {
+	struct prinfo *buf = malloc(sizeof(struct prinfo) * 500);
+	int nr = 500;
+	int i;
+	syscall(223, buf, &nr);
+	for (i = 0; i < nr; ++i) {
+		//printf(/* correct number of \t */);
+		struct prinfo p = buf[i];
+		printf("%s,%d,%ld,%d,%d,%d,%d\n", p.comm, p.pid, p.state,p.parent_pid, p.first_child_pid, p.next_sibling_pid, p.uid);
+>>>>>>> origin/master
+	}
+	return 0;
+}
+
