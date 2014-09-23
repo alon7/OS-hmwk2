@@ -66,19 +66,20 @@ SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int __user *, nr)
 			continue;
 		}
 		if (p->sibling.next != NULL && p->sibling.next != &p->sibling 
-			&& p->sibling.next == &p->real_parent->children) {
+			&& p->sibling.next != &p->real_parent->children) {
 			p = list_entry(p->sibling.next, struct task_struct, sibling);
 			continue;
 		}
 		while(1) {
 			if(p->real_parent != NULL && p->real_parent->pid != 0 && p->real_parent != p) {
 				p = p->real_parent;
+			}
 			else {
 				p = NULL;
 				break;
 			}
 			if (p->sibling.next != NULL && p->sibling.next != &p->sibling 
-				&& p->sibling.next == &p->real_parent->children) {
+				&& p->sibling.next != &p->real_parent->children) {
 				p = list_entry(p->sibling.next, struct task_struct, sibling);
 				break;
 			}
@@ -100,7 +101,6 @@ SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int __user *, nr)
 void dfs_prinfo_copy(struct task_struct *head, struct prinfo *kernel_buf, int *copy_count, int *pr_count, int space_count)
 {
 	struct task_struct *p = head;
-	struct list_head *list;
 	int i;
 	(*pr_count)++;
 	if (*copy_count < space_count) {
@@ -123,9 +123,5 @@ void dfs_prinfo_copy(struct task_struct *head, struct prinfo *kernel_buf, int *c
 				break;
 		}
 		(*copy_count)++;
-	}
-	list_for_each(list, &head->children) {
-		struct task_struct *p = list_entry(list, struct task_struct, sibling);
-		dfs_prinfo_copy(p, kernel_buf, copy_count, pr_count, space_count);	
 	}
 }
