@@ -54,10 +54,38 @@ SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int __user *, nr)
 	kernel_buf = kmalloc(space_count * sizeof(struct prinfo), __GFP_WAIT);
 	read_lock(&tasklist_lock);
 	p = &init_task;
+	/* find root */
 	while(p->real_parent != NULL && p->real_parent->pid != 0 && p->real_parent != p) {
 		p = p->real_parent;
 	}
-	dfs_prinfo_copy(p, kernel_buf, &copy_count, &pr_count, space_count);	
+	/* dfs */
+	while(1) {
+		dfs_prinfo_copy(p, kernel_buf, &copy_count, &pr_count, space_count);
+		if (p->children.next != &p->children) {
+			p = list_entry(p->children.next, struct task_struct, sibling);
+			continue;
+		}
+		if (p->sibling.next != NULL && p->sibling.next != &p->sibling 
+			&& p->sibling.next == &p->real_parent->children) {
+			p = list_entry(p->sibling.next, struct task_struct, sibling);
+			continue;
+		}
+		while(1) {
+			if(p->real_parent != NULL && p->real_parent->pid != 0 && p->real_parent != p) {
+				p = p->real_parent;
+			else {
+				p = NULL;
+				break;
+			}
+			if (p->sibling.next != NULL && p->sibling.next != &p->sibling 
+				&& p->sibling.next == &p->real_parent->children) {
+				p = list_entry(p->sibling.next, struct task_struct, sibling);
+				break;
+			}
+		}
+		if (p == NULL)
+			break;
+	}
 	read_unlock(&tasklist_lock);
 	if (copy_to_user(buf, kernel_buf, sizeof(struct prinfo) * copy_count) != 0) {
 		return -EINVAL;
