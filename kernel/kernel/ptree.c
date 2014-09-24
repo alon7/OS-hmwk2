@@ -119,7 +119,7 @@ SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int __user *, nr)
 		p = p->real_parent;
 	/* do dfs in a non-recursion way */
 	read_lock(&tasklist_lock);
-	dfs(p, kernel_buf, copy_count, pr_count, space_count);
+	dfs(p, kernel_buf, &copy_count, &pr_count, space_count);
 	read_unlock(&tasklist_lock);
 
 	if (copy_to_user(buf, kernel_buf, sizeof(struct prinfo) * copy_count)
