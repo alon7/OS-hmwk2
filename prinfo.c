@@ -59,7 +59,7 @@ int main(int argc, const char * argv[])
    	struct prinfo *buf;
    	int *nr;
    	nr = malloc(sizeof(int));
-   	int taskNum;
+   	*nr = 500;
    	buf = (struct prinfo*)malloc(sizeof(struct prinfo) * 500);
 /*
    	buf->pid = 0;
@@ -107,11 +107,11 @@ int main(int argc, const char * argv[])
    	(buf + 15)->pid = 12;
    	(buf + 15)->next_sibling_pid = 0;
  */  
-   	taskNum = syscall(223, buf, nr);
+   	syscall(223, buf, nr);
 //	printf("=====NR: %d======\n", *nr);    
    	InitStack();
    	int i, j;
-   	for (i = 0; i < taskNum; i++) {
+   	for (i = 0; i < *nr; i++) {
        		Push(*(buf+i));
         	for (j = 0; j < s->top; j++) {
             		printf("\t");
