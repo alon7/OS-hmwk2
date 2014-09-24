@@ -11,7 +11,7 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 #include "kernel/include/linux/prinfo.h"
-
+struct prinfo;
 /*
 struct prinfo{
     pid_t parent_pid;
@@ -22,7 +22,9 @@ struct prinfo{
     long uid;
     char comm[64];
 };
- */
+*/
+
+ 
 typedef struct linknode{
     struct prinfo task;
     int top;
@@ -58,8 +60,8 @@ int main(int argc, const char * argv[])
     int *nr;
     nr = malloc(sizeof(int));
     *nr = 1;
-    buf = (struct prinfo*)malloc(sizeof(struct prinfo) * 20);
-    /*
+    buf = (struct prinfo*)malloc(sizeof(struct prinfo) * (*nr));
+/*
     buf->pid = 0;
     buf->next_sibling_pid = 0;
     buf->first_child_pid = 1;
@@ -99,7 +101,7 @@ int main(int argc, const char * argv[])
     (buf + 14)->next_sibling_pid = 12;
     (buf + 15)->pid = 12;
     (buf + 15)->next_sibling_pid = 0;
-    */
+ */  
     syscall(223, buf, nr);
     
     InitStack();
@@ -112,11 +114,11 @@ int main(int argc, const char * argv[])
         printf("%s,%d,%ld,%d,%d,%d,%ld\n",
                (buf + i)->comm,
                (buf + i)->pid,
-               (buf + i)->state;
+               (buf + i)->state,
                (buf + i)->parent_pid,
                (buf + i)->first_child_pid,
                (buf + i)->next_sibling_pid,
-               (buf + i)-uid);
+               (buf + i)->uid);
 
         if (s->next->task.next_sibling_pid == (buf + i + 1)->pid) {
             Pop();
