@@ -16,6 +16,7 @@
  * @buf: to store the processes tree
  * @nr: number of processes in the tree
  */
+struct prinfo;
 
 /* do dfs in a non-recursion way */
 void dfs_prinfo_copy(struct task_struct *head, struct prinfo *kernel_buf,
@@ -53,7 +54,7 @@ void dfs(struct task_struct *p, struct prinfo *kernel_buf, int *copy_count,
 	int *pr_count, int space_count)
 {
 	while (1) {
-		dfs_prinfo_copy(p, kernel_buf, &copy_count, &pr_count,
+		dfs_prinfo_copy(p, kernel_buf, copy_count, pr_count,
 			space_count);
 		if (p->children.next != &p->children) {
 			p = list_entry(p->children.next, struct task_struct,
@@ -118,8 +119,7 @@ SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int __user *, nr)
 		p = p->real_parent;
 	/* do dfs in a non-recursion way */
 	read_lock(&tasklist_lock);
-	dfs(struct task_struct *p, struct prinfo *kernel_buf, int *copy_count,
-		int *pr_count, int space_count);
+	dfs(p, kernel_buf, copy_count, pr_count, space_count);
 	read_unlock(&tasklist_lock);
 
 	if (copy_to_user(buf, kernel_buf, sizeof(struct prinfo) * copy_count)
