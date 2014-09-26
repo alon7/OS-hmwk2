@@ -26,7 +26,7 @@ void dfs_prinfo_copy(struct task_struct *head, struct prinfo *kernel_buf,
 	int i;
 	(*pr_count)++;
 	if (*copy_count < space_count) {
-		kernel_buf[*copy_count].parent_pid = p->real_parent->pid;
+		kernel_buf[*copy_count].parent_pid = p->parent->pid;
 		kernel_buf[*copy_count].pid = p->pid;
 		if (p->children.next == &p->children)
 			kernel_buf[*copy_count].first_child_pid = 0;
@@ -34,7 +34,7 @@ void dfs_prinfo_copy(struct task_struct *head, struct prinfo *kernel_buf,
 			kernel_buf[*copy_count].first_child_pid =
 		list_entry(p->children.next, struct task_struct, sibling)->pid;
 		if (p->sibling.next == NULL || p->sibling.next == &p->sibling
-			|| p->sibling.next == &p->real_parent->children)
+			|| p->sibling.next == &p->parent->children)
 			kernel_buf[*copy_count].next_sibling_pid = 0;
 		else
 			kernel_buf[*copy_count].next_sibling_pid =
@@ -62,15 +62,15 @@ void dfs(struct task_struct *p, struct prinfo *kernel_buf, int *copy_count,
 			continue;
 		}
 		if (p->sibling.next != NULL && p->sibling.next != &p->sibling
-			&& p->sibling.next != &p->real_parent->children) {
+			&& p->sibling.next != &p->parent->children) {
 			p = list_entry(p->sibling.next, struct task_struct,
 				sibling);
 			continue;
 		}
 		while (1) {
-			if (p->real_parent != NULL && p->real_parent->pid != 0
-				&& p->real_parent != p) {
-				p = p->real_parent;
+			if (p->parent != NULL && p->parent->pid != 0
+				&& p->parent != p) {
+				p = p->parent;
 			} else {
 				p = NULL;
 				break;
@@ -78,7 +78,7 @@ void dfs(struct task_struct *p, struct prinfo *kernel_buf, int *copy_count,
 			if (p->sibling.next != NULL
 				&& p->sibling.next != &p->sibling
 				&& p->sibling.next
-					!= &p->real_parent->children){
+					!= &p->parent->children){
 				p = list_entry(p->sibling.next,
 					struct task_struct, sibling);
 				break;
@@ -114,9 +114,9 @@ SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int __user *, nr)
 		return -EFAULT;
 	p = &init_task;
 	/* find root */
-	while (p->real_parent != NULL && p->real_parent->pid != 0
-		&& p->real_parent != p)
-		p = p->real_parent;
+	while (p->parent != NULL && p->parent->pid != 0
+		&& p->parent != p)
+		p = p->parent;
 	/* do dfs in a non-recursion way */
 	read_lock(&tasklist_lock);
 	dfs(p, kernel_buf, &copy_count, &pr_count, space_count);
