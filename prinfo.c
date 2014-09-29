@@ -53,6 +53,17 @@ int Pop()
 	free(p);
 	return 1;
 }
+void ClearStack()
+{
+	LiStack *p = s;
+	LiStack *q = s->next;
+	while (q != NULL) {
+		free(p);
+		p = q;
+		q = p->next;
+	}
+	free(p);
+}
 int main(int argc, const char *argv[])
 {
 	struct prinfo *buf;
@@ -131,5 +142,10 @@ int main(int argc, const char *argv[])
 			Pop();
 		Pop();
 	}
+	free(nr);
+	nr = NULL;
+	free(buf);
+	buf = NULL;
+	ClearStack();
 	return 0;
 }
