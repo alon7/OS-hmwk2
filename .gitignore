@@ -1,2 +1,4 @@
 *.o
 binder_info
+*.DS_Store
+*.pages
