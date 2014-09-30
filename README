@@ -11,6 +11,8 @@ The pid “prinfo” change each run. Because every time we use adb shell to cre
 the new pid will be re-assigned to prinfo. And the prinfo is actually the child process of adbd.
 So both child pid of adbd and pid of prinfo itself change.
 
+Other fields don't change, because we never touch other programs.
+
 Though it is expected to observe some of the "process state" changes, but
 in the few run of our program, we didn't see state field change.
 
