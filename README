@@ -1,0 +1,90 @@
+For our solution to Q4, please refer to Q4.pdf in the same directory.
+
+
+--------------
+Output Example
+--------------
+printf(/* correct number of \t */);
+printf("%s,%d,%ld,%d,%d,%d,%d\n", p.comm, p.pid, p.state,
+	 p.parent_pid, p.first_child_pid, p.next_sibling_pid, p.uid);
+
+Example:
+
+init,1,1,0,60,0,0
+        ...
+	 servicemanager,44,1,1,0,43,1000
+	 vold,45,1,1,0,44,0
+	 netd,47,1,1,0,45,0
+	 debuggerd,48,1,1,0,47,0
+	 rild,49,1,1,0,48,1001
+	 surfaceflinger,50,1,1,0,49,1000
+	 zygote,51,1,1,745,50,0
+		  system_server,371,1,51,0,0,1000
+                ...
+		  android.launcher,530,1,51,0,517,10008
+
+----------------
+Prinfo Structure
+----------------
+struct prinfo {
+	pid_t parent_pid;		/* process id of parent */
+	pid_t pid;			/* process id */
+	pid_t first_child_pid;  	/* pid of youngest child */
+	pid_t next_sibling_pid;  	/* pid of older sibling */
+	long state;			/* current state of process */
+	long uid;			/* user id of process owner */
+	char comm[64];			/* name of program executed */
+};
+
+
+--------------
+Design Pattern
+--------------
+Function Hierachy
+
+		|-------------------------|             |------------|
+                |     dfs_prinfo_copy    |------------>|   dfs  |
+                |-------------------------|             |------------|
+                               ^                           /
+                                \                         /
+                                 \                       /
+                                  \                     /
+                                   \                   /
+                                    \                 /
+                                     \               /
+                                      \             /
+                                       \           /
+                           |------------- SYSCALL_DEFINE2 --------------|
+
+
+
+---------------
+SYSCALL_DEFINE2
+---------------
+We find root first:
+
+while (p->parent != NULL && p->parent->pid != 0
+  && p->parent != p)
+  p = p->parent;
+
+Then we call dfs to search in a non-recursion way:
+
+read_lock(&tasklist_lock);
+dfs(p, kernel_buf, &copy_count, &pr_count, space_count);
+read_unlock(&tasklist_lock);
+
+---
+dfs
+---
+
+---------------
+dfs_prinfo_copy
+---------------
+For this function we do dfs in a non-recursion way.
+Depth-first search (DFS) is an algorithm for
+traversing or searching tree or graph data structures.
+
+
+--------------------
+Algorithmic Analysis
+--------------------
