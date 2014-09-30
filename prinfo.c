@@ -1,9 +1,3 @@
-/*
-	main.c
-	Created by Wendan Kang on 9/21/14.
-	Copyright (c) 2014 Wendan Kang. All rights reserved.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/syscall.h>
