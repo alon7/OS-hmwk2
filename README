@@ -53,7 +53,7 @@ We can find some comments in app_process source(frameworks/base/cmds/app_process
 This eventually calls AndroidRuntime.start() function, passing it the parameters com.android.internal.os.ZygoteInit
 and start-system-server. ZygoteInit.main() first registers the zygote socket.
 It initializes a lot of classes system-wide resources like drawables, xmls, etc.
-Then it calls startSystemServer() which forks a new process for com.android.server.SystemServer. 
+Then it calls startSystemServer() which forks a new process for com.android.server.SystemServer.
 Zygote process opens a socket /dev/socket/zygote to listen for requests for starting applications.
 
 iii)Discuss some reasons why an embedded system might choose to use a process like the zygote.
@@ -69,8 +69,6 @@ This is different from the way linux do. So it’s necessary to take zygote the 
 3, Save memory. As we know, Android runs on Linux. The Linux Kernel implements a strategy call Copy On Write (COW).
 In the case of Android those libraries are not writable. This means that all process forked from Zygote are using the exact same copy of the system classes and resources.
 No matter how many applications are started the increase in memory usage will be a lot smaller.
-
-
 
 
 
