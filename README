@@ -76,15 +76,12 @@ read_unlock(&tasklist_lock);
 ---
 dfs
 ---
-
----------------
-dfs_prinfo_copy
----------------
 For this function we do dfs in a non-recursion way.
 Depth-first search (DFS) is an algorithm for
 traversing or searching tree or graph data structures.
 
-
---------------------
-Algorithmic Analysis
---------------------
+---------------
+dfs_prinfo_copy
+---------------
+We copy all the essential data in this function,
+in a DFS way.
